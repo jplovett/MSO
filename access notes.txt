@@ -1,0 +1,35 @@
+' Current Database, Display Form in Access Options
+
+Private Sub Form_Load()
+
+    TempVars("userID") = Environ("UserName")		' returns CDC user/Windows user
+    TempVars("compName") = Environ("Computername")	' returns computer name
+    
+    
+    ' ---------- LOCK DOWN NAV, RIBBON, COMMANDS ----------
+    
+    'DoCmd.NavigateTo "acNavigationCategoryObjectType"	' Hides the left navigation bar/flyout
+    'DoCmd.RunCommand acCmdWindowHide
+    'DoCmd.ShowToolbar "Ribbon", acToolbarNo 		' Hides the top ribbon
+    
+End Sub
+
+
+' MainMod Module 
+
+Public Sub SetCurrentForm(strFormName As String)
+
+    Dim aFrm As Access.Form
+    Dim i As Long
+    
+    ' Loop all open forms, from last to first, to avoid problems due to closing forms
+    ' (removing them from the Forms collection) in the loop
+    For i = Forms.Count - 1 To 0 Step -1
+        Set aFrm = Forms(i)
+        ' Close all forms except the provided form
+        If aFrm.Name <> strFormName Then
+            DoCmd.Close acForm, aFrm.Name
+        End If
+    Next i
+    DoCmd.Maximize
+End Sub
